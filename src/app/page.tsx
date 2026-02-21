@@ -1,4 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
+
+export const dynamic = "force-dynamic";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import Hero from "@/components/home/Hero";

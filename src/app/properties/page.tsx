@@ -1,4 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
+
+export const dynamic = "force-dynamic";
 import Footer from "@/components/layout/Footer";
 import PropertyCard from "@/components/home/PropertyCard";
 import { getProperties } from "@/lib/api/properties";
