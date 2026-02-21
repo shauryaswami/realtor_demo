@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useController } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
+import ImageUploader from "@/components/admin/ImageUploader";
 import {
     Building2,
     MapPin,
@@ -30,7 +31,7 @@ const propertySchema = z.object({
     bedrooms: z.string().optional(),
     bathrooms: z.string().optional(),
     area: z.string().optional(),
-    images: z.string().min(1, "At least one image URL is required"),
+    images: z.string().min(1, "Please upload at least one image"),
     features: z.string().min(1, "Please list some features (comma separated)"),
     isFeatured: z.boolean(),
     status: z.enum(["AVAILABLE", "SOLD", "RENTED"]),
@@ -49,6 +50,7 @@ export default function PropertyForm({ initialData }: PropertyFormProps) {
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors },
     } = useForm<PropertyFormValues>({
         resolver: zodResolver(propertySchema),
@@ -66,6 +68,8 @@ export default function PropertyForm({ initialData }: PropertyFormProps) {
             isFeatured: false,
         },
     });
+
+    const { field: imagesField } = useController({ name: "images", control });
 
     const onSubmit = async (data: PropertyFormValues) => {
         setIsLoading(true);
@@ -224,12 +228,15 @@ export default function PropertyForm({ initialData }: PropertyFormProps) {
 
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-white/70 text-sm font-medium ml-1">Images (URLs, comma separated)</label>
-                                <input
-                                    {...register("images")}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white focus:border-brand-gold/50 outline-none transition-all"
-                                    placeholder="/images/properties/prop-1.jpg, ..."
+                                <label className="text-white/70 text-sm font-medium ml-1 flex items-center gap-2">
+                                    <ImageIcon size={14} className="text-brand-gold" />
+                                    Property Images
+                                </label>
+                                <ImageUploader
+                                    value={imagesField.value}
+                                    onChange={imagesField.onChange}
                                 />
+                                {errors.images && <p className="text-red-400 text-xs mt-1">{errors.images.message}</p>}
                             </div>
 
                             <div className="space-y-2">
