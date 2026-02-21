@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Real Estate India - Production Setup
 
-## Getting Started
+## Overview
+A premium luxury real estate platform built with **Next.js 16**, **Prisma**, **Supabase (PostgreSQL)**, and **NextAuth.js**.
 
-First, run the development server:
+---
 
+## 🚀 Quick Start (Local Development)
+
+### 1. Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/shauryaswami/realtor_demo.git
+cd realtor_demo
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set Up Supabase Database
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Go to [supabase.com](https://supabase.com) and create a **free** project.
+2. Once your project is ready, navigate to **Project Settings → Database → Connection String**.
+3. Copy:
+   - **Connection Pooling (Transaction mode)** → this is your `DATABASE_URL`
+   - **Direct connection** → this is your `DIRECT_URL`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Configure Environment Variables
 
-## Learn More
+Copy `.env.example` to `.env` and fill in your Supabase URLs:
+```bash
+cp .env.example .env
+```
 
-To learn more about Next.js, take a look at the following resources:
+Edit `.env`:
+```env
+DATABASE_URL="postgresql://postgres.[project-ref]:[password]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[project-ref]:[password]@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
+AUTH_SECRET="your-random-secret-at-least-32-chars"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Initialize the Database
+```bash
+npx prisma db push
+npx prisma db seed
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5. Run Locally
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ☁️ Deploy to Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1. Import Project on Vercel
+Go to [vercel.com](https://vercel.com) → **New Project** → Import `realtor_demo`.
+
+### 2. Add Environment Variables in Vercel Dashboard
+Go to **Project Settings → Environment Variables** and add:
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | Your Supabase pooled connection URL |
+| `DIRECT_URL` | Your Supabase direct connection URL |
+| `AUTH_SECRET` | A random 32+ character secret |
+| `NEXTAUTH_URL` | Your Vercel deployment URL (e.g. `https://realtor-demo.vercel.app`) |
+
+### 3. Deploy
+Vercel will automatically run `prisma generate && next build`.
+
+### 4. Seed the Production Database (First Time Only)
+After setting up, run once locally pointing to production DB:
+```bash
+DATABASE_URL="..." DIRECT_URL="..." npx prisma db push
+DATABASE_URL="..." DIRECT_URL="..." npx prisma db seed
+```
+
+---
+
+## 🔐 Admin Panel
+
+Default credentials (set in `prisma/seed.ts`):
+- **URL**: `/admin`
+- **Email**: `admin@swamihealing.com`
+- **Password**: `admin123`
+
+> **Important**: Change the password after first login!
+
+---
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database**: Supabase (PostgreSQL) via Prisma ORM
+- **Authentication**: NextAuth.js v5
+- **Styling**: Tailwind CSS v4
+- **Animations**: Framer Motion
+- **Deployment**: Vercel
