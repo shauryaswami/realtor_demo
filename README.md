@@ -21,6 +21,17 @@ npm install
 3. Copy:
    - **Connection Pooling (Transaction mode)** → this is your `DATABASE_URL`
    - **Direct connection** → this is your `DIRECT_URL`
+2. Next, navigate to **Project Settings → API**.
+3. Copy:
+   - **Project URL** → this is your `NEXT_PUBLIC_SUPABASE_URL`
+   - **service_role (secret) key** → this is your `SUPABASE_SERVICE_ROLE_KEY`
+
+### 3. Set Up Supabase Storage
+1. In the Supabase sidebar, click on **Storage**.
+2. Click **New bucket**.
+3. Name it `properties`.
+4. Set the toggle for **Public bucket** to ON.
+5. Click **Create**.
 
 ### 3. Configure Environment Variables
 
@@ -35,6 +46,8 @@ DATABASE_URL="postgresql://postgres.[project-ref]:[password]@aws-0-ap-south-1.po
 DIRECT_URL="postgresql://postgres.[project-ref]:[password]@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
 AUTH_SECRET="your-random-secret-at-least-32-chars"
 NEXTAUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 ```
 
 ### 4. Initialize the Database
@@ -64,6 +77,8 @@ Go to **Project Settings → Environment Variables** and add:
 | `DIRECT_URL` | Your Supabase direct connection URL |
 | `AUTH_SECRET` | A random 32+ character secret |
 | `NEXTAUTH_URL` | Your Vercel deployment URL (e.g. `https://realtor-demo.vercel.app`) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase Service Role Key |
 
 ### 3. Deploy
 Vercel will automatically run `prisma generate && next build`.
