@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
     try {
@@ -10,11 +9,6 @@ export async function POST(req: NextRequest) {
         if (!files || files.length === 0) {
             return NextResponse.json({ error: "No files provided" }, { status: 400 });
         }
-
-        const uploadDir = join(process.cwd(), "public", "images", "properties");
-
-        // Ensure directory exists
-        await mkdir(uploadDir, { recursive: true });
 
         const savedPaths: string[] = [];
 
@@ -29,11 +23,28 @@ export async function POST(req: NextRequest) {
                 .replace(/[^a-z0-9]/gi, "-")
                 .toLowerCase()
                 .slice(0, 40);
-            const uniqueName = `${safeName}-${Date.now()}.${ext}`;
-            const filePath = join(uploadDir, uniqueName);
+            const uniqueName = `property-${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
 
-            await writeFile(filePath, buffer);
-            savedPaths.push(`/images/properties/${uniqueName}`);
+            // Upload to Supabase Storage
+            const { data, error } = await supabaseAdmin.storage
+                .from("properties")
+                .upload(uniqueName, buffer, {
+                    contentType: file.type,
+                    cacheControl: "3600",
+                    upsert: false
+                });
+
+            if (error) {
+                console.error("Supabase upload error:", error);
+                throw error;
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabaseAdmin.storage
+                .from("properties")
+                .getPublicUrl(uniqueName);
+
+            savedPaths.push(publicUrl);
         }
 
         return NextResponse.json({ paths: savedPaths });
