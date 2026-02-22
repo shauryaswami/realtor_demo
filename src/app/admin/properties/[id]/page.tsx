@@ -2,6 +2,8 @@ import PropertyForm from "@/components/admin/PropertyForm";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const property = await prisma.property.findUnique({
